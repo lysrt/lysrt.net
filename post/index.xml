@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Lucas Sartore</title>
-    <link>https://lysrt.net/</link>
-    <description>Recent content on Lucas Sartore</description>
+    <title>Posts on Lucas Sartore</title>
+    <link>https://lysrt.net/post/</link>
+    <description>Recent content in Posts on Lucas Sartore</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 03 Jan 2018 10:58:26 +0100</lastBuildDate>
     
-	<atom:link href="https://lysrt.net/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://lysrt.net/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -20,17 +20,6 @@
       <description>When self hosting my website, most of the time I had to choose between Apache HTTP Server and NGINX.
 For a simple web site, Apache would be more than enough all the time.
 Comes the need to host an API? No worries, Apache can proxy several endpoints on a single computer. Have several Domain Names and this is it. But what if you need to do something like: mysite.com/api/? NGINX reverse proxy was the way to go for me.</description>
-    </item>
-    
-    <item>
-      <title>About</title>
-      <link>https://lysrt.net/about/</link>
-      <pubDate>Wed, 03 Jan 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://lysrt.net/about/</guid>
-      <description> About me Spare time gopher. I studied in Grenoble INP - Esisar.
-Go, C#, Java, Python.
-Projects Android apps  Simple Wallet ColorMix Unicolor  Machine learning  Digit recognition  Cryptocurrencies  Market places API connectivity Coins price monitoring  Headless web rendering engine  Bro (inspired by Robinson)  </description>
     </item>
     
   </channel>

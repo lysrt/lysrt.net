@@ -4,10 +4,10 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Go and Android programming dev bits">
+  <meta name="description" content="">
   <meta name="generator" content="Hugo 0.37-DEV" />
 
-  <title>Lucas Sartore</title>
+  <title>Using Caddy &middot; Lucas Sartore</title>
 
   
   
@@ -36,8 +36,6 @@
   <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
 
   
-  
-  <link rel="alternate" type="application/rss+xml" title="Lucas Sartore" href="https://lysrt.net/index.xml" />
   
 
   
@@ -100,17 +98,13 @@
 
 
 <div class="header">
-  <h1>Lucas Sartore</h1>
-  <h2>Go and Android programming dev bits</h2>
+  <h1>Using Caddy</h1>
+  <h2></h2>
 </div>
 
 <div class="content">
-  
-    <article>
-  <header>
-    <h2><a href="https://lysrt.net/post/using-caddy/">Using Caddy</a></h2>
 
-    <div class="post-meta">
+  <div class="post-meta">
 
   <div>
     
@@ -126,24 +120,57 @@
 </div>
 
 
-  </header>
+  <p>When self hosting my website, most of the time I had to choose between Apache HTTP Server and NGINX.</p>
 
-  <p>
-  When self hosting my website, most of the time I had to choose between Apache HTTP Server and NGINX.
-For a simple web site, Apache would be more than enough all the time.
-Comes the need to host an API? No worries, Apache can proxy several endpoints on a single computer. Have several Domain Names and this is it. But what if you need to do something like: mysite.com/api/? NGINX reverse proxy was the way to go for me.
-  </p>
+<p>For a simple web site, Apache would be more than enough all the time.</p>
+
+<p>Comes the need to host an API? No worries, Apache can proxy several endpoints on a single computer. Have several Domain Names and this is it. But what if you need to do something like: <em>mysite.com/api/</em>?
+NGINX reverse proxy was the way to go for me.</p>
+
+<p>I then started to work and have less time to spend to maintain  NGINX or Apache configuration files, and I forgot about the upgrade procedure every time.</p>
+
+<p>Meet Caddy.</p>
+
+<pre><code>lysrt.net {
+    gzip
+    root /path/to/lysrt.net/
+    tls my@email.com
+
+    proxy /api localhost:8080 {
+        without /api
+        transparent
+    }
+
+    log stdout
+    errors {
+        log stderr
+        404 404.html
+    }
+}
+</code></pre>
+
+<p>And this is <em>it</em>! no more config for a running full TLS server, serving compressed pages, with transparent reverse proxy API, proper logging, and a custom 404 page (why not?)</p>
+
 
   
-  <footer>
-    <a href="/post/using-caddy/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
+<div class="prev-next-post pure-g">
+  <div class="pure-u-1-24" style="text-align: left;">
+    
+  </div>
+  <div class="pure-u-10-24">
+    
+  </div>
+  <div class="pure-u-2-24">
+    &nbsp;
+  </div>
+  <div class="pure-u-10-24">
+    
+  </div>
+  <div class="pure-u-1-24" style="text-align: right;">
+    
+  </div>
+</div>
 
-  
-
-  
 
 
 </div>
