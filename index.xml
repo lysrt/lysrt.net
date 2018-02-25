@@ -12,14 +12,15 @@
     
     
     <item>
-      <title>Using Caddy</title>
+      <title>Using Caddy on Linux with systemd</title>
       <link>https://lysrt.net/post/using-caddy/</link>
       <pubDate>Wed, 03 Jan 2018 10:58:26 +0100</pubDate>
       
       <guid>https://lysrt.net/post/using-caddy/</guid>
-      <description>When self hosting my website, most of the time I had to choose between Apache HTTP Server and NGINX.
-For a simple web site, Apache would be more than enough all the time.
-Comes the need to host an API? No worries, Apache can proxy several endpoints on a single computer. Have several Domain Names and this is it. But what if you need to do something like: mysite.com/api/? NGINX reverse proxy was the way to go for me.</description>
+      <description>You&amp;rsquo;ve probably heard about Caddy. If you haven&amp;rsquo;t, you should definitely check it out.
+Caddy is an amazing web server, with automatic HTTPS. It uses HTTP/2 by default, and is so simple to configure.
+If you host your own website on a dedicated server, at some point you had to decide which web server to use. Generally it will be Apache HTTP Server or NGINX.
+They do the work, sure.</description>
     </item>
     
     <item>
