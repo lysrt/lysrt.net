@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {{ partial "head.html" . }}
+</head>
+
+<body>
+  {{ partial "sidemenu.html" . }}
+
+<div class="header">
+  <h1>{{ .Title }}</h1>
+  <h2>{{ .Description }}</h2>
+</div>
+
+<div class="content">
+
+  {{ partial "post_meta.html" . }}
+
+  {{ .Content }}
+
+  {{ partial "prev_next_post.html" . }}
+
+</div>
+
+<footer>
+  {{ partial "footer.html" . }}
+</footer>
+
+<script src="{{ .Site.BaseURL }}js/ui.js"></script>
+
+{{ partial "google_analytics.html" . }}
+
+</body>
+</html>

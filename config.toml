@@ -1,0 +1,42 @@
+baseURL = "https://lysrt.net/"
+title = "Lucas Sartore"
+author = "Lucas Sartore"
+
+content = ""
+languageCode = "en-us"
+
+#copyright = ""
+#theme = "blackburn"
+
+[params]
+  description = "Go and Android programming dev bits"
+  dateFormat = "Mon, Jan 2, 2006"
+  listDateFormat = "Jan 2, 2006"
+
+  googleAnalytics = "UA-80227268-2"
+  
+  # CSS name for highlight.js
+  highlightjs = "androidstudio"
+
+[[menu.main]]
+  name = "Home"
+  #pre = "<i class='fa fa-home fa-fw'></i>"
+  weight = 10
+  identifier = "home"
+  url = "/"
+[[menu.main]]
+  name = "Archive"
+  #pre = "<i class='fa fa-list fa-fw'></i>"
+  weight = 20
+  identifier = "post"
+  url = "/post/"
+[[menu.main]]
+  name = "About"
+  #pre = "<i class='fa fa-user fa-fw'></i>"
+  weight = 30
+  identifier = "about"
+  url = "/about/"
+
+[social]
+  twitter = "@LucasSartore"
+  github = "lysrt"

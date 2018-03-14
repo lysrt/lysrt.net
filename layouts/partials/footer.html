@@ -1,0 +1,9 @@
+{{ with .Site.Copyright }}
+<div class="small-print">
+  <small>{{ . | safeHTML }}</small>
+</div>
+{{end}}
+
+<div class="small-print">
+  <small>Built with <a href="https://gohugo.io/" target="_blank">Hugo</a></small>
+</div>
