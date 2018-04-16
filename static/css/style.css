@@ -54,12 +54,18 @@ footer {
     }
 }
 
+/* All */
 .content {
     margin: 0 auto;
     margin-bottom: 3.5em;
     font-size: 1.05em;
     line-height: 1.7em;
 }
+    .content img {
+        width: 100%;
+        height: auto;
+    }
+
     .content time {
         color: #aaa;
     }
