@@ -6,10 +6,22 @@
     <description>Recent content on Lucas Sartore</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 03 Jan 2018 10:58:26 +0100</lastBuildDate>
+    <lastBuildDate>Sun, 15 Apr 2018 12:27:09 +0200</lastBuildDate>
     
 	<atom:link href="https://lysrt.net/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Build a SVG Parser in Go</title>
+      <link>https://lysrt.net/post/build-svg-parser-1-lexer/</link>
+      <pubDate>Sun, 15 Apr 2018 12:27:09 +0200</pubDate>
+      
+      <guid>https://lysrt.net/post/build-svg-parser-1-lexer/</guid>
+      <description>This post is part of a series on writing a SVG parser in Go. It is inspired by the amazing book form Thorsten Ball (https://interpreterbook.com/).
+ As developers, we use parsers everyday: from web browser engines, to compilers, interpreters and linters.
+But when it comes to write one yourself, to read a custom config file, or protocol, where would you start?
+Most of the time the easiest way is to generate the code of the parser using a generator, like yacc or ANTLR.</description>
+    </item>
     
     <item>
       <title>Using Caddy on Linux with systemd</title>
@@ -31,7 +43,7 @@ They do the work, sure.</description>
       <guid>https://lysrt.net/about/</guid>
       <description> About me Spare time gopher. I studied in Grenoble INP - Esisar.
 Go, C#, Java, Python.
-Projects Android apps  Simple Wallet ColorMix Unicolor  Machine learning  Digit recognition  Cryptocurrencies  Market places API connectivity Coins price monitoring  Headless web rendering engine  Bro (inspired by Robinson)  </description>
+Projects Android apps  Simple Wallet ColorMix Unicolor  Cryptocurrencies  Market places API connectivity Coins price monitoring  Headless web rendering engine  Bro (inspired by Robinson)  </description>
     </item>
     
   </channel>

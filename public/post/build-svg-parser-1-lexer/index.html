@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Part one - The lexer">
+  <meta name="generator" content="Hugo 0.37-DEV" />
+
+  <title>Build a SVG Parser in Go &middot; Lucas Sartore</title>
+
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/pure-min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-min.css">
+  
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.6/css/all.css">
+
+  <link rel="stylesheet" href="/css/side-menu.css">
+  <link rel="stylesheet" href="/css/style.css">
+
+  
+  
+
+  
+  
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/androidstudio.min.css">
+  <script src="/js/highlight.pack.js"></script>
+  <script>
+    
+    hljs.configure({languages: []})
+    hljs.initHighlightingOnLoad();
+  </script>
+  
+
+  
+
+
+</head>
+
+<body>
+  <div id="menu">
+  <div class="pure-menu pure-menu-horizontal">
+    <ul class="pure-menu-list">
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/">Home</a>
+      
+        </li>
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/post/">Archive</a>
+      
+        </li>
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/about/">About</a>
+      
+        </li>
+      
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://twitter.com/@LucasSartore" target="_blank"><i class="fab fa-twitter fa-fw"></i></a>
+    </li>
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://github.com/lysrt" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+    </li>
+    
+
+    
+
+    
+
+    </ul>
+  </div>
+</div>
+
+
+<div class="header">
+  <h1>Build a SVG Parser in Go</h1>
+  <h2>Part one - The lexer</h2>
+</div>
+
+<div class="content">
+
+  <div class="post-meta">
+
+  <div>
+    
+    <time>Sun, Apr 15, 2018</time>
+  </div>
+
+  
+
+  
+
+  
+
+</div>
+
+
+  
+
+<blockquote>
+<p>This post is part of a series on writing a SVG parser in Go. It is inspired by the amazing book form Thorsten Ball (<a href="https://interpreterbook.com/">https://interpreterbook.com/</a>).</p>
+</blockquote>
+
+<p>As developers, we use parsers everyday: from web browser engines, to compilers, interpreters and linters.<br />
+But when it comes to write one yourself, to read a custom config file, or protocol, where would you start?<br />
+Most of the time the easiest way is to generate the code of the parser using a generator, like yacc or ANTLR. Let&rsquo;s see how to build one ourselves.</p>
+
+<p>In this series I chose to render SVG to PNG.</p>
+
+<p>SVG is easy to parse: it has a simple XML syntax. And seeing the result of your parsing as an image is fun and motivating.</p>
+
+<p>Let&rsquo;s go!</p>
+
+<h1 id="what-s-in-our-parser">What&rsquo;s in our parser?</h1>
+
+<p>There are different types of parsers. Here we&rsquo;re going to write the combination of a lexer (tokenizer) and a parser.</p>
+
+<p>The lexer will read the input SVG file, and produce a list of tokens.</p>
+
+<p>The parser will take these tokens as input, and produce a structure representing the content of the SVG file.<br />
+This structure can be a tree, or some kind of hierarchy.</p>
+
+<p><em>Note:</em></p>
+
+<blockquote>
+<p>This article is here to teach you about lexing and parsing. For this purpose, we will not properly build a XML DOM tree. We will discuss it later.</p>
+</blockquote>
+
+<p>As a last step, we will read this structure to paint to a PNG.</p>
+
+<p>This can be summarized with the following chart.</p>
+
+<p><img src="/img/svg-flow.png" alt="SVG parsing flow" title="SVG parsing flow" /></p>
+
+<h1 id="the-tokens">The tokens</h1>
+
+<p>The first step is to define the set of tokens our lexer is going to output.<br />
+A token can be a symbol or a string of symbols.</p>
+
+<p>What tokens do we need for our lexer? To answer this question, let&rsquo;s look at an example SVG file:</p>
+
+<pre><code class="language-xml">&lt;svg width=&quot;100&quot; height=&quot;100&quot;&gt;
+    &lt;circle cx=&quot;15&quot; cy=&quot;0&quot; r=&quot;50&quot; stroke=&quot;00FF00&quot; stroke-width=&quot;4&quot; fill=&quot;FFFF00&quot; /&gt;
+    &lt;circle cx=&quot;90&quot; cy=&quot;80&quot; r=&quot;40&quot; stroke=&quot;F00&quot; stroke-width=&quot;2&quot; fill=&quot;00F&quot; /&gt;
+&lt;/svg&gt;
+</code></pre>
+
+<p>Note:</p>
+
+<blockquote>
+<p>For simplicity I use hex colors without the leading hash sign <code>#</code>.</p>
+</blockquote>
+
+<p>So we&rsquo;ve got the following tokens:</p>
+
+<ul>
+<li>Opening bracket: <code>&lt;</code></li>
+<li>Tag names: <code>svg</code>, <code>circle</code>, &hellip;</li>
+<li>Closing bracket: <code>&gt;</code></li>
+<li>Slash: <code>/</code></li>
+<li>Equal sign: <code>=</code></li>
+<li>Double quotes: <code>&quot;</code></li>
+<li>Attributes names: <code>height</code>, <code>stroke-width</code>, &hellip;</li>
+<li>Attributes values: strings and numbers</li>
+</ul>
+
+<p>Given that our lexer has to return a list of tokens (most likely a slice in Go), we can go ahead and create a Token type.<br />
+We notice there are two types of tokens: key characters and literals. We can make everything simple by attributing a type and a litteral to each token.</p>
+
+<p>Note that I am adding End Of File (EOF) and an Illegal token types. They will be used later to indicate respectively the end of our input file, or a tokenizer error.</p>
+
+<pre><code class="language-Go">type TokenType string
+
+const (
+    EOF             TokenType = &quot;EOF&quot;
+    ILLEGAL         TokenType = &quot;ILLEGAL&quot;
+    TokenOpen       TokenType = &quot;&lt;&quot;
+    TokenClose      TokenType = &quot;&gt;&quot;
+    TokenSlash      TokenType = &quot;/&quot;
+    TokenQuote      TokenType = &quot;\&quot;&quot;
+    TokenEqual      TokenType = &quot;=&quot;
+    TokenIdentifier TokenType = &quot;IDENT&quot;
+)
+
+type Token struct {
+    Type    TokenType
+    Literal string
+}
+</code></pre>
+
+<p>If this does not make much sense yet, don&rsquo;t worry, it will when we get to write our first test.</p>
+
+<h1 id="the-lexer">The lexer</h1>
+
+<p>Let&rsquo;s jump into the fun part: writing the lexer. I will write unit tests along the way. Our lexer will not give an interesting output so tests are the best way to quickly check it works as expected.</p>
+
+<p>What will the lexer look like?</p>
+
+<pre><code class="language-Go">type Lexer struct {
+    input           string
+    currentPosition int
+    nextPosition    int
+    ch              byte
+}
+</code></pre>
+
+<p>Nothing surprising here, excepted maybe the <code>nextPosition</code> field. Our lexer will need the ability to see one character ahead, to know the type of the token being read. More on this when we will read TokenIdentifiers.</p>
+
+<p>Note:</p>
+
+<blockquote>
+<p>For simplicity the lexer will work with string rather than io.Writer, and it will read this string byte by byte. It means we might get into trouble to correctly  read Unicode input files.</p>
+</blockquote>
+
+<p>Before writing our first test, let&rsquo;s define the main method of our lexer, to get the list of all tokens.<br />
+The first idea would be to write something like:</p>
+
+<pre><code class="language-Go">func (l *Lexer) GetAllTokens() []Token
+</code></pre>
+
+<p>While this could work in most cases, imagine the memory cost parsing an enormous input file. It would create a huge slice of Tokens.<br />
+To fix this issue, we can use an iterative lexer instead, whose main method would iterate each token successively.</p>
+
+<pre><code class="language-Go">func (l *Lexer) NextToken() Token {
+    // ...
+}
+</code></pre>
+
+<p>It would simply return a token with Type EOF when it&rsquo;s read all the input file. Way more efficient!</p>
+
+<p>If it was not clear before, you should see the interest of the EOF TokenType now, as well as the fact we use <code>currentPosition</code> and <code>nextPosition</code>, so our lexer knows exactly where it is inside the input string.</p>
+
+<h2 id="some-tests-for-our-lexer">Some tests for our lexer</h2>
+
+<p>We need to test the <code>NextToken()</code> method. The following test should be easy to understand if you are familiar with Go testing package.</p>
+
+<p>Note that I chose a meaningless input. The lexer is not interested into understanding SVG, but rather into recognizing SVG tokens, which it will do fine with the following input.<br />
+Also note the whitespaces in the input, between tokens, not inside an identifier, as it would break it into two.</p>
+
+<pre><code class="language-Go">func TestNextToken(t *testing.T) {
+    input := `/&gt; ab-cd&lt; &quot;=   *123`
+    expectedTokens := []Token{
+        {TokenSlash, &quot;/&quot;},
+        {TokenClose, &quot;&gt;&quot;},
+        {TokenIdentifier, &quot;ab-cd&quot;},
+        {TokenOpen, &quot;&lt;&quot;},
+        {TokenQuote, &quot;\&quot;&quot;},
+        {TokenEqual, &quot;=&quot;},
+        {ILLEGAL, &quot;*&quot;},
+        {TokenIdentifier, &quot;123&quot;},
+        {EOF, &quot;&quot;},
+    }
+
+    l := NewLexer(input)
+    for i, expected := range expectedTokens {
+        tok := l.NextToken()
+        if tok.Type != expected.Type {
+            t.Fatalf(&quot;wrong token[%d]. Expected type=%q, got=%q&quot;, i, expected.Type, tok.Type)
+        }
+        if tok.Literal != expected.Literal {
+            t.Fatalf(&quot;wrong token[%d]. Expected literal=%q, got=%q&quot;, i, expected.Literal, tok.Literal)
+        }
+    }
+}
+</code></pre>
+
+<p>This is not compiling yet, as we&rsquo;re missing the <code>NewLexer</code> function, which will be used to initialize the lexer, and set it ready to tokenize its input.<br />
+After initialization, we want the lexer to have <code>currentPosition = 0</code> and <code>nextPosition = 1</code>.</p>
+
+<p>To do so, our lexer will need two utility methods: <code>peekChar</code> to return the next character in the input string, but without changing our lexer state.
+And <code>readChar</code> to update the lexer state and make it point to the next character (held by the <code>ch</code> field of our lexer).</p>
+
+<pre><code class="language-Go">func NewLexer(input string) *Lexer {
+    lexer := Lexer{input: input}
+    lexer.readChar()
+    return &amp;lexer
+}
+
+func (l *Lexer) readChar() {
+    l.ch = l.peekChar()
+    l.currentPosition = l.nextPosition
+    l.nextPosition++
+}
+
+func (l *Lexer) peekChar() byte {
+    if l.nextPosition &gt;= len(l.input) {
+        return 0
+    }
+    return l.input[l.nextPosition]
+}
+</code></pre>
+
+<p>We make sure to check that <code>nextPosition</code> is within the input bounds, otherwise we return 0 (null char).</p>
+
+<p>Our code should now compile, and our test fail. Let&rsquo;s fix it now.</p>
+
+<h2 id="a-working-lexer">A working lexer</h2>
+
+<p>Let&rsquo;s start with the skeleton of our <code>NextToken</code> method.<br />
+A switch statement, an making sure we advance by calling <code>readChar</code> should be all we need.</p>
+
+<p>Or is it? We would be able to read some of our tokens, but something is missing. Our lexer needs to be able to comsume whitespaces, and ignore them to go the next non-whitespace character.</p>
+
+<pre><code class="language-Go">func (l *Lexer) readWhitespace() {
+    for isWhitespace(l.ch) {
+        l.readChar()
+    }
+}
+
+func isWhitespace(char byte) bool {
+    return char == ' ' || char == '\t' || char == '\n' || char == '\r'
+}
+</code></pre>
+
+<p>Notes:</p>
+
+<blockquote>
+<p>As said earlier, we handle bytes only, but this isWhitespace method can be extended to handle Unicode. And Go has everything in its standard library: <code>unicode.IsSpace(r rune) bool</code> (<a href="https://golang.org/pkg/unicode/">https://golang.org/pkg/unicode/</a>)</p>
+
+<p>Notice the <code>readWhitespace</code> name, starting by <code>read</code>. I will use it as a convention for methods updating the state of the parser.</p>
+</blockquote>
+
+<p>This leaves us with the following code.</p>
+
+<pre><code class="language-Go">func (l *Lexer) NextToken() Token {
+    var tok Token
+    l.readWhitespace()
+
+    switch l.ch {
+    case '&lt;':
+        tok = Token{TokenOpen, string(l.ch)}
+    case '&gt;':
+        tok = Token{TokenClose, string(l.ch)}
+    case '/':
+        tok = Token{TokenSlash, string(l.ch)}
+    case '&quot;':
+        tok = Token{TokenQuote, string(l.ch)}
+    case '=':
+        tok = Token{TokenEqual, string(l.ch)}
+    case 0:
+        tok.Type = EOF
+    default:
+        tok = Token{ILLEGAL, string(l.ch)}
+		
+    l.readChar()
+    return tok
+}
+</code></pre>
+
+<p>With this version, we can almost make our test pass. By the way, if a test almost passing means something for you, I suggest you reconsider the concept of test.</p>
+
+<p>Joke apart, with this input, our test passes! Yes!</p>
+
+<pre><code class="language-Go">input := `/&gt; &lt; &quot;=   *`
+expectedTokens := []Token{
+    {TokenSlash, &quot;/&quot;},
+    {TokenClose, &quot;&gt;&quot;},
+    {TokenOpen, &quot;&lt;&quot;},
+    {TokenQuote, &quot;\&quot;&quot;},
+    {TokenEqual, &quot;=&quot;},
+    {ILLEGAL, &quot;*&quot;},
+    {EOF, &quot;&quot;},
+}
+</code></pre>
+
+<h2 id="handling-identifier-tokens">Handling identifier tokens</h2>
+
+<p>We&rsquo;re almost done with our lexer. We need to add the ability to parse identifiers, strings or numbers like:</p>
+
+<ul>
+<li><code>circle</code></li>
+<li><code>stroke-width</code></li>
+<li><code>1234</code></li>
+</ul>
+
+<p>This will not be handled with a simple switch case, but rather in the default case. We need a way to identify a character belonging to an identifier. In our case it will be all alphanumeric characters, lower and upper-case, and the dash <code>-</code>.</p>
+
+<p>In the way we wrote <code>isWhitespace</code>, we can write <code>isAlphaNumDash</code>.</p>
+
+<pre><code class="language-Go">func isAlphaNumDash(char byte) bool {
+    return isLetter(char) || isDigit(char) || char == '-'
+}
+func isLetter(char byte) bool {
+    return 'a' &lt;= char &amp;&amp; char &lt;= 'z' || 'A' &lt;= char &amp;&amp; char &lt;= 'Z'
+}
+func isDigit(char byte) bool {
+    return '0' &lt;= char &amp;&amp; char &lt;= '9'
+}
+</code></pre>
+
+<p>Note:</p>
+
+<blockquote>
+<p>Here again <code>unicode</code> package has the appropriate methods to work with Unicode points.</p>
+</blockquote>
+
+<p>Let&rsquo;s come back to our default case:</p>
+
+<pre><code class="language-Go">default:
+    if isAlphaNumDash(l.ch) {
+        tok.Literal = l.readIdentifier()
+        tok.Type = TokenIdentifier
+        return tok
+    } else {
+        tok = Token{ILLEGAL, string(l.ch)}
+    }
+</code></pre>
+
+<p>We now need to write the <code>readIdentifier</code> method. It is prefixed by <code>read</code>, which means it will comsume characters and update our lexer state.<br />
+So we need to make sure we don&rsquo;t call <code>l.readChar()</code> after reading an identifier. This is why we return the token right away.</p>
+
+<p>No more suspense, here is our method. We need to make sure we keep the start position, to return a sub slice of the lexer&rsquo;s input.</p>
+
+<pre><code class="language-Go">func (l *Lexer) readIdentifier() string {
+    startPos := l.currentPosition
+    for isAlphaNumDash(l.ch) {
+        l.readChar()
+    }
+    return l.input[startPos:l.currentPosition]
+}
+</code></pre>
+
+<p>If we go back to the full version of our test, it should now be passing. How good is that?</p>
+
+<h1 id="before-going-on">Before going on</h1>
+
+<p>I think this lexer architecture is brilliant, and very flexible. All credit goes to Thorsten Ball and his amazing book: <a href="https://interpreterbook.com/">https://interpreterbook.com/</a>.</p>
+
+<p>I&rsquo;ve seen several parser implementations in Go using the same structure, and so should you if you have to create your own lexer.<br />
+It is easy to improve, easy to test and I think, easy to read.</p>
+
+<p>I will see you in the next post of this series, to write the actual parser and tackle SVG rendering.</p>
+
+
+  
+<div class="prev-next-post pure-g">
+  <div class="pure-u-1-24" style="text-align: left;">
+    
+    <a href="https://lysrt.net/post/using-caddy/"><i class="fa fa-chevron-left"></i></a>
+    
+  </div>
+  <div class="pure-u-10-24">
+    
+    <nav class="prev">
+      <a href="https://lysrt.net/post/using-caddy/">Using Caddy on Linux with systemd</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-2-24">
+    &nbsp;
+  </div>
+  <div class="pure-u-10-24">
+    
+  </div>
+  <div class="pure-u-1-24" style="text-align: right;">
+    
+  </div>
+</div>
+
+
+
+</div>
+
+<footer>
+  
+
+<div class="small-print">
+  <small>Built with <a href="https://gohugo.io/" target="_blank">Hugo</a></small>
+</div>
+
+</footer>
+
+<script src="https://lysrt.net/js/ui.js"></script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-80227268-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-80227268-2');
+</script>
+
+
+
+
+</body>
+</html>
