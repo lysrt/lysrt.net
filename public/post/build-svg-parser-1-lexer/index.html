@@ -7,7 +7,7 @@
   <meta name="description" content="Part one - The lexer">
   <meta name="generator" content="Hugo 0.37-DEV" />
 
-  <title>Build a SVG Parser in Go &middot; Lucas Sartore</title>
+  <title>Building a SVG Parser in Go &middot; Lucas Sartore</title>
 
   
   
@@ -87,7 +87,7 @@
 
 
 <div class="header">
-  <h1>Build a SVG Parser in Go</h1>
+  <h1>Building a SVG Parser in Go</h1>
   <h2>Part one - The lexer</h2>
 </div>
 
@@ -112,16 +112,15 @@
   
 
 <blockquote>
-<p>This post is part of a series on writing a SVG parser in Go. It is inspired by the amazing book form Thorsten Ball (<a href="https://interpreterbook.com/">https://interpreterbook.com/</a>).</p>
+<p>This post is part of a series on writing a SVG parser in Go. It is inspired by the amazing book from Thorsten Ball (<a href="https://interpreterbook.com/">https://interpreterbook.com/</a>).</p>
 </blockquote>
 
 <p>As developers, we use parsers everyday: from web browser engines, to compilers, interpreters and linters.<br />
 But when it comes to write one yourself, to read a custom config file, or protocol, where would you start?<br />
 Most of the time the easiest way is to generate the code of the parser using a generator, like yacc or ANTLR. Let&rsquo;s see how to build one ourselves.</p>
 
-<p>In this series I chose to render SVG to PNG.</p>
-
-<p>SVG is easy to parse: it has a simple XML syntax. And seeing the result of your parsing as an image is fun and motivating.</p>
+<p>In this series I decided to render SVG to PNG.<br />
+SVG is easy to parse: it has a simple XML syntax. And seeing the result of your parsing as an image is fun and motivating.</p>
 
 <p>Let&rsquo;s go!</p>
 
