@@ -18,9 +18,9 @@ Spare time gopher. I studied in [Grenoble INP - Esisar](http://esisar.grenoble-i
 * [ColorMix](https://play.google.com/store/apps/details?id=fr.lucassartore.colormix)
 * [Unicolor](https://play.google.com/store/apps/details?id=fr.lucassartore.colorblocks)
 
-### Machine learning
+<!-- ### Machine learning
 
-* [Digit recognition](https://github.com/lysrt)
+* [Digit recognition](https://github.com/lysrt) -->
 
 ### Cryptocurrencies
 

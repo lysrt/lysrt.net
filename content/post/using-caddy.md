@@ -176,3 +176,30 @@ To follow the latest logs in real time:
 ```shell
 $ journalctl -f -u caddy.service
 ```
+
+
+
+Feb 25 16:08:40 lys systemd[1]: Reloading Caddy HTTP/2 web server.
+
+Feb 25 16:08:40 lys caddy[2529]: 2018/02/25 16:08:40 [INFO] SIGUSR1: Reloading
+Feb 25 16:08:40 lys caddy[2529]: 2018/02/25 16:08:40 [INFO] Reloading
+
+Feb 25 16:08:40 lys systemd[1]: Reloaded Caddy HTTP/2 web server.
+
+Feb 25 16:08:41 lys caddy[2529]: From https://github.com/lysrt/lysrt.net
+Feb 25 16:08:41 lys caddy[2529]: * branch            master     -> FETCH_HEAD
+Feb 25 16:08:41 lys caddy[2529]: Already up-to-date.
+Feb 25 16:08:41 lys caddy[2529]: 2018/02/25 16:08:41 https://github.com/lysrt/lysrt.net.git pulled.
+Feb 25 16:08:41 lys caddy[2529]: 2018/02/25 16:08:41 [INFO] Reloading complete
+
+
+
+
+Feb 25 16:09:15 lys caddy[2529]: 2018/02/25 16:09:15 [INFO] SIGUSR1: Reloading
+Feb 25 16:09:15 lys caddy[2529]: 2018/02/25 16:09:15 [INFO] Reloading
+
+Feb 25 16:09:16 lys caddy[2529]: From https://github.com/lysrt/lysrt.net
+Feb 25 16:09:16 lys caddy[2529]: * branch            master     -> FETCH_HEAD
+Feb 25 16:09:16 lys caddy[2529]: Already up-to-date.
+Feb 25 16:09:16 lys caddy[2529]: 2018/02/25 16:09:16 https://github.com/lysrt/lysrt.net.git pulled.
+Feb 25 16:09:16 lys caddy[2529]: 2018/02/25 16:09:16 [INFO] Reloading complete
