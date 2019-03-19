@@ -14,4 +14,8 @@ For an example of what it looks like, please check out the website of Hugo, or m
 
 It took me a bit of thinking to properly organize the source and the output of my website. Let's see what options we have out there, and I will detail my current workflow.
 
-
+```
+git add public
+git commit -m "Bla bla"
+git subtree push --prefix public origin site
+```
