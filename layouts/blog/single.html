@@ -2,11 +2,11 @@
 <html lang="en">
 
 <head>
-  {{ partial "head.html" . }}
+{{ partial "head.html" . }}
 </head>
 
 <body>
-  {{ partial "sidemenu.html" . }}
+{{ partial "sidemenu.html" . }}
 
 <div class="header">
   <h1>{{ .Title }}</h1>
@@ -14,13 +14,9 @@
 </div>
 
 <div class="content">
-
   {{ partial "post_meta.html" . }}
-
   {{ .Content }}
-
   {{ partial "prev_next_post.html" . }}
-
 </div>
 
 <footer>

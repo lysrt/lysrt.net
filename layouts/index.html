@@ -14,12 +14,11 @@
 </div>
 
 <div class="content">
-  {{ range ( .Paginate (where .Data.Pages "Type" "post")).Pages }}
+  {{ range where .Data.Pages "Type" "blog" }}
     {{ .Render "summary"}}
   {{ end }}
 
-  {{ partial "pagination.html" . }}
-
+  {{/* {{ partial "pagination.html" . }} */}}
 </div>
 
 <footer>
