@@ -8,7 +8,7 @@ description: "Part one - The lexer"
 *This post is the part one of a series on writing a SVG parser in Go. It is inspired by the amazing book from Thorsten Ball (https://interpreterbook.com/).*
 
 As developers, we use parsers everyday: from web browser engines, to compilers, interpreters and linters.  
-But when it comes to write one yourself, to read a custom config file, or protocol, where would you start?<!--more-->
+But when it comes to write one yourself, for instance to read a custom config file, or protocol, where would you start?<!--more-->
 
 Most of the time the easiest way is to generate the code of the parser using a generator, like yacc or ANTLR. Let's see how to build one ourselves.
 
